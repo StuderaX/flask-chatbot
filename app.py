@@ -1,23 +1,18 @@
-from flask import Flask, request, jsonify
-import openai
-import os
+from flask import Flask, jsonify, request
 
+# Initialize the Flask app
 app = Flask(__name__)
 
-# Set your OpenAI API key (already stored as an environment variable)
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Define a route for the home page
+@app.route('/')
+def home():
+    return "Hello, welcome to my chatbot!"
 
-@app.route("/chat", methods=["POST"])
+# Define a route for the chatbot endpoint (you can expand this later)
+@app.route('/chat', methods=['POST'])
 def chat():
-    data = request.json
-    user_message = data.get("message", "")
+    user_input = request.json.get('message')
+    # Here, you'll process the input and get a response from your model
+    response = "You said: " + user_input
+    return jsonify({"response": response})
 
-    response = openai.ChatCompletion.create(
-        model="gpt-4",  
-        messages=[{"role": "user", "content": user_message}]
-    )
-
-    return jsonify({"response": response["choices"][0]["message"]["content"]})
-
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
